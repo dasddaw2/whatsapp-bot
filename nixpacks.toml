@@ -1,0 +1,15 @@
+[phases.setup]
+nixPkgs = [
+    "nodejs_18",
+    "chromium",
+    "nss",
+    "atk",
+    "at-spi2-atk",
+    "cups",
+    "dbus",
+    "libdrm",
+    "gtk3",
+    "pango",
+    "mesa",
+    "alsa-lib"
+]
