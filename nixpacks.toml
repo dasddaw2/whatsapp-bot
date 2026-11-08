@@ -1,6 +1,5 @@
 [phases.setup]
 nixPkgs = [
-    "chromium",
     "glib",
     "nss",
     "atk",
@@ -13,7 +12,7 @@ nixPkgs = [
     "mesa",
     "alsa-lib",
     "libxkbcommon",
+    "libgbm",
     "pciutils",
-    "udev",
-    "libgbm"
+    "udev"
 ]
