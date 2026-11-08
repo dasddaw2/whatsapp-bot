@@ -4,10 +4,11 @@ const qrcode = require('qrcode-terminal');
 // تخزين حالات العملاء مؤقتًا
 const userStates = new Map();
 
-// إعداد العميل مع خيارات التشغيل على السيرفرات السحابية
+// إعداد العميل ليعمل بسلاسة على السيرفرات السحابية
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
+        executablePath: 'chromium', // استخدام متصفح السيرفر المثبت مسبقاً
         headless: true,
         args: [
             '--no-sandbox',
@@ -16,7 +17,8 @@ const client = new Client({
             '--disable-accelerated-2d-canvas',
             '--no-first-run',
             '--no-zygote',
-            '--disable-gpu'
+            '--disable-gpu',
+            '--single-process'
         ],
     }
 });
@@ -33,14 +35,13 @@ client.on('ready', () => {
 
 // الاستماع للرسائل الواردة
 client.on('message', async msg => {
-    // تجاهل رسائل المجموعات والستوري
     if (msg.from.includes('@g.us') || msg.from === 'status@broadcast') return;
 
     const senderId = msg.from;
     const text = msg.body.trim();
     const currentState = userStates.get(senderId);
 
-    // 1. إعادة تعيين أو الترحيب
+    // الترحيب والقائمة الرئيسية
     if (['مرحبا', 'السلام عليكم', 'hi', 'hello', 'مراحب', '0', 'قائمة', 'منيو'].includes(text.toLowerCase())) {
         userStates.delete(senderId);
         await msg.reply(
@@ -53,7 +54,7 @@ client.on('message', async msg => {
         return;
     }
 
-    // 2. الاختيار من القائمة الرئيسية
+    // الاختيار من القائمة
     if (!currentState) {
         if (text === '1') {
             userStates.set(senderId, 'WAITING_FOR_INQUIRY');
@@ -73,7 +74,7 @@ client.on('message', async msg => {
         return;
     }
 
-    // 3. استقبال التفاصيل بعد اختيار القسم
+    // استقبال التفاصيل
     if (currentState) {
         await msg.reply('✅ تم استلام رسالتك وتوجيهها للمختص بنجاح.\nيرجى الانتظار قليلاً وسيتم الرد عليك من قِبلنا على نفس المحادثة.');
         userStates.delete(senderId);
@@ -81,5 +82,4 @@ client.on('message', async msg => {
     }
 });
 
-// بدء التشغيل
 client.initialize();
