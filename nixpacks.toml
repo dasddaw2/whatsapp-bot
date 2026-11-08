@@ -1,7 +1,6 @@
 [phases.setup]
 nixPkgs = [
-    "nodejs_18",
-    "chromium",
+    "glib",
     "nss",
     "atk",
     "at-spi2-atk",
@@ -11,5 +10,6 @@ nixPkgs = [
     "gtk3",
     "pango",
     "mesa",
-    "alsa-lib"
+    "alsa-lib",
+    "libxkbcommon"
 ]
