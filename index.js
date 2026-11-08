@@ -4,11 +4,10 @@ const qrcode = require('qrcode-terminal');
 // تخزين حالات العملاء مؤقتًا
 const userStates = new Map();
 
-// إعداد العميل ليعمل بسلاسة على السيرفرات السحابية
+// إعداد العميل الافتراضي (سماح لـ Puppeteer بتحميل متصفحها الداخلي تلقائياً)
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
-        executablePath: 'chromium', // استخدام متصفح السيرفر المثبت مسبقاً
         headless: true,
         args: [
             '--no-sandbox',
@@ -17,8 +16,7 @@ const client = new Client({
             '--disable-accelerated-2d-canvas',
             '--no-first-run',
             '--no-zygote',
-            '--disable-gpu',
-            '--single-process'
+            '--disable-gpu'
         ],
     }
 });
