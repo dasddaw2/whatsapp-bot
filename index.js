@@ -1,10 +1,8 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 
-// تخزين حالات العملاء مؤقتًا
 const userStates = new Map();
 
-// إعداد العميل الافتراضي (سماح لـ Puppeteer بتحميل متصفحها الداخلي تلقائياً)
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
@@ -16,12 +14,12 @@ const client = new Client({
             '--disable-accelerated-2d-canvas',
             '--no-first-run',
             '--no-zygote',
-            '--disable-gpu'
+            '--disable-gpu',
+            '--single-process'
         ],
     }
 });
 
-// عرض QR Code في سجلات السيرفر (Logs)
 client.on('qr', (qr) => {
     console.log('امسح رمز الـ QR التالي للربط:');
     qrcode.generate(qr, { small: true });
@@ -31,7 +29,6 @@ client.on('ready', () => {
     console.log('✅ البوت يعمل وجاهز بكامل المزايا في السحاب!');
 });
 
-// الاستماع للرسائل الواردة
 client.on('message', async msg => {
     if (msg.from.includes('@g.us') || msg.from === 'status@broadcast') return;
 
@@ -39,7 +36,6 @@ client.on('message', async msg => {
     const text = msg.body.trim();
     const currentState = userStates.get(senderId);
 
-    // الترحيب والقائمة الرئيسية
     if (['مرحبا', 'السلام عليكم', 'hi', 'hello', 'مراحب', '0', 'قائمة', 'منيو'].includes(text.toLowerCase())) {
         userStates.delete(senderId);
         await msg.reply(
@@ -52,7 +48,6 @@ client.on('message', async msg => {
         return;
     }
 
-    // الاختيار من القائمة
     if (!currentState) {
         if (text === '1') {
             userStates.set(senderId, 'WAITING_FOR_INQUIRY');
@@ -72,7 +67,6 @@ client.on('message', async msg => {
         return;
     }
 
-    // استقبال التفاصيل
     if (currentState) {
         await msg.reply('✅ تم استلام رسالتك وتوجيهها للمختص بنجاح.\nيرجى الانتظار قليلاً وسيتم الرد عليك من قِبلنا على نفس المحادثة.');
         userStates.delete(senderId);
